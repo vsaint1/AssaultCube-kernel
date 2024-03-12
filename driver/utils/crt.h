@@ -4,6 +4,9 @@
 
 namespace crt
 {
+
+	template <typename _T> __forceinline unsigned int constexpr hash_const(_T const* input) { return *input ? static_cast<unsigned int>(*input) + 33 * hash_const(input + 1) : 5381; }
+
 	template <typename t>
 	__forceinline int strlen(t str) {
 		if (!str)
@@ -21,7 +24,7 @@ namespace crt
 		return (int)(buffer - str);
 	}
 
-	inline bool strcmp(const char* src, const char* dst)
+	__forceinline bool strcmp(const char* src, const char* dst)
 	{
 		if (!src || !dst)
 		{
@@ -47,7 +50,7 @@ namespace crt
 		return false;
 	}
 
-	inline int strtoi(const char* str)
+	__forceinline int strtoi(const char* str)
 	{
 		int result = 0;
 		while (*str)
@@ -58,7 +61,7 @@ namespace crt
 		return result;
 	}
 
-	inline const char* to_lower(char* str) {
+	__forceinline const char* to_lower(char* str) {
 
 		char* str_low = "";
 		for (char* pointer = str; *pointer != '\0'; ++pointer)
