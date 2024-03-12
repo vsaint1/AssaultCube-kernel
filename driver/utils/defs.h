@@ -5,6 +5,24 @@
 
 #define KM_POOL_TAG 'kdd'
 
+
+typedef struct _LDR_DATA_TABLE_ENTRY
+{
+	LIST_ENTRY InLoadOrderLinks;
+	LIST_ENTRY InMemoryOrderLinks;
+	LIST_ENTRY InInitializationOrderLinks;
+	PVOID DllBase;
+	PVOID EntryPoint;
+	ULONG SizeOfImage;
+	UNICODE_STRING FullDllName;
+	UNICODE_STRING BaseDllName;
+	ULONG Flags;
+	USHORT LoadCount;
+	USHORT TlsIndex;
+	LIST_ENTRY HashLinks;
+	ULONG TimeDateStamp;
+} LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
+
 typedef struct _PEB_LDR_DATA
 {
 	ULONG Length;
@@ -108,6 +126,7 @@ typedef struct _RTL_PROCESS_MODULES
 
 extern "C"
 {
+	NTKERNELAPI PPEB NTAPI PsGetProcessPeb(IN PEPROCESS Process);
 	NTSYSAPI  NTSTATUS IoCreateDriver(PUNICODE_STRING DriverName, PDRIVER_INITIALIZE InitializationFunction);
 	NTKERNELAPI
 		VOID IoDeleteDriver(IN PDRIVER_OBJECT DriverObject);
