@@ -1,2 +1,4 @@
-# AssaultCube-kernel
-user/kernel cheetos just meant for learning purposes
+### Disclaimer
+
+> [!WARNING]  
+> **This project never meant to be used, is just 4fun and learning purposes**
