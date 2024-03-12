@@ -2,7 +2,6 @@
 
 uintptr_t process::get_kernel_module_base(char* module_name)
 {
-
 	ULONG64 module_base = 0;
 	ULONG module_size = 0;
 	PRTL_PROCESS_MODULES modules = NULL;
@@ -24,11 +23,7 @@ uintptr_t process::get_kernel_module_base(char* module_name)
 
 	PRTL_PROCESS_MODULE_INFORMATION module = modules->Modules;
 	for (ULONG i = 0; i < modules->NumberOfModules; i++) {
-#if _DEBUG
-		printf("Module Name: %s\n", module[i].FullPathName + module[i].OffsetToFileName);
-		printf("Module Base: %p\n", module[i].ImageBase);
-		printf("Module Size: %d\n", module[i].ImageSize);
-#endif
+
 		if (strcmp((char*)module[i].FullPathName + module[i].OffsetToFileName, module_name) == 0) {
 			module_base = (ULONG64)module[i].ImageBase;
 			break;
@@ -57,6 +52,70 @@ int process::get_process_id_by_name(const char* name)
 		}
 		list = list->Flink;
 	} while (list != head);
+
+	return 0;
+}
+
+uintptr_t process::get_module_base(int pid, const char* module_name)
+{
+
+	PEPROCESS proc = {};
+
+	if (!NT_SUCCESS(PsLookupProcessByProcessId((HANDLE)pid, &proc)))
+		return 0;
+
+	PEB* ppeb = (PEB*)PsGetProcessPeb(proc);
+
+	if (!ppeb)
+		return 0;
+
+	KAPC_STATE apc = { 0 };
+
+	KeStackAttachProcess(proc, &apc);
+
+	PEB_LDR_DATA* pldr = (PEB_LDR_DATA*)ppeb->Ldr;
+
+	if (!pldr) {
+		KeUnstackDetachProcess(&apc);
+
+		return 0;
+	}
+
+	ANSI_STRING cstr = { 0 };
+	UNICODE_STRING name = { 0 };
+	void* addr = nullptr;
+
+	RtlInitAnsiString(&cstr, module_name);
+
+	RtlAnsiStringToUnicodeString(&name, &cstr, TRUE);
+
+	addr = MmGetSystemRoutineAddress(&name);
+
+	for (LIST_ENTRY* list = (LIST_ENTRY*)pldr->InLoadOrderModuleList.Flink; list != &pldr->InLoadOrderModuleList; list = (LIST_ENTRY*)list->Flink)
+	{
+		PLDR_DATA_TABLE_ENTRY pentry = CONTAINING_RECORD(list, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
+
+
+		if (RtlCompareUnicodeString(&name, &pentry->BaseDllName, FALSE) == 0) {
+
+			printf("Module Name: %wZ\n", pentry->BaseDllName);
+			printf("Module Base: %p\n", pentry->DllBase);
+			printf("Module Size: %d\n", pentry->SizeOfImage);
+
+
+			uintptr_t module_base = (uintptr_t)pentry->DllBase;
+			RtlFreeUnicodeString(&name);
+
+			KeUnstackDetachProcess(&apc);
+			return module_base;
+
+		}
+
+	}
+
+	KeUnstackDetachProcess(&apc);
+	RtlFreeUnicodeString(&name);
+	printf("Module not found\n");
 
 	return 0;
 }
