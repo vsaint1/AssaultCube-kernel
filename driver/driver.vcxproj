@@ -127,9 +127,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="entry.cpp" />
+    <ClCompile Include="memory\process.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="memory\process.h" />
     <ClInclude Include="utils\crt.h" />
+    <ClInclude Include="utils\defs.h" />
     <ClInclude Include="utils\utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
