@@ -21,7 +21,7 @@ namespace crt
 		return (int)(buffer - str);
 	}
 
-	bool strcmp(const char* src, const char* dst)
+	inline bool strcmp(const char* src, const char* dst)
 	{
 		if (!src || !dst)
 		{
@@ -47,7 +47,7 @@ namespace crt
 		return false;
 	}
 
-	int strtoi(const char* str)
+	inline int strtoi(const char* str)
 	{
 		int result = 0;
 		while (*str)
@@ -56,5 +56,16 @@ namespace crt
 			result += *str++ - '0';
 		}
 		return result;
+	}
+
+	inline const char* to_lower(char* str) {
+
+		char* str_low = "";
+		for (char* pointer = str; *pointer != '\0'; ++pointer)
+		{
+			*str_low = (char)(short)tolower(*pointer);
+		}
+
+		return str_low;
 	}
 }
