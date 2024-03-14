@@ -10,10 +10,9 @@ int main(int argc, char* argv[]) {
 	printf("pid: %d\n", pid);
 
 	UNICODE_STRING module_base;
-	RtlInitUnicodeString(&name, L"ac_client.exe");
-
+	RtlInitUnicodeString(&module_base, L"ac_client.exe");
 	uintptr_t base = driver.get_module_base(module_base);
-
+	printf("base: %p\n", base);
 	system("pause");
 	return 0;
 }

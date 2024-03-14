@@ -41,7 +41,7 @@ public:
 		request.module_name = module_name;
 
 		DWORD bytes_returned;
-		DeviceIoControl(handle, MODULE_BASE_REQUEST, &request, sizeof(request), &request, sizeof(request), &bytes_returned, NULL);
+		DeviceIoControl(handle, MODULE_BASE_REQUEST, &request, sizeof(request), NULL,NULL, &bytes_returned, NULL);
 		uintptr_t base = (uintptr_t)bytes_returned;
 		return base;
 	}
