@@ -3,7 +3,7 @@
 
 #define DRIVER_RUNNING(name) process::get_kernel_module_base(name) != 0
 
-#pragma warning( disable : 4311 4302)
+#pragma warning( disable : 4311 4302 4244)
 
 namespace process {
 
