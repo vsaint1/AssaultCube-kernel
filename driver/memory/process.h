@@ -11,5 +11,5 @@ namespace process {
 	
 	int get_process_id_by_name(const char* name);
 
-	uintptr_t get_module_base(int pid, const char* module_name);
+	uintptr_t get_module_base(int pid, UNICODE_STRING module_name);
 };
