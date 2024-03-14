@@ -1,12 +1,22 @@
 #include "memory.h"
 
-NTSTATUS memory::write(void* address, void* target, size_t size)
+NTSTATUS memory::write(int pid,void* address, void* target, size_t size)
 {
+	UNREFERENCED_PARAMETER(pid);
+	UNREFERENCED_PARAMETER(address);
+	UNREFERENCED_PARAMETER(target);
+	UNREFERENCED_PARAMETER(size);
+
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS memory::write_safe(void* address, void* target, size_t size)
+NTSTATUS memory::write_safe(int pid,void* address, void* target, size_t size)
 {
+	UNREFERENCED_PARAMETER(pid);
+	UNREFERENCED_PARAMETER(address);
+	UNREFERENCED_PARAMETER(target);
+	UNREFERENCED_PARAMETER(size);
+
 	return STATUS_SUCCESS;
 }
 
