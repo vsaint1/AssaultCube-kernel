@@ -56,10 +56,8 @@ int process::get_process_id_by_name(const char* name)
 	return 0;
 }
 
-uintptr_t process::get_module_base(int pid,UNICODE_STRING module_name)
+uintptr_t process::get_module_base(int pid, const char* module_name)
 {
-	// TODO: sanity checks 0FFFFFFFFFFFFFFFC 
-
 	PEPROCESS proc = {};
 
 	if (!NT_SUCCESS(PsLookupProcessByProcessId((HANDLE)pid, &proc)))
@@ -82,14 +80,22 @@ uintptr_t process::get_module_base(int pid,UNICODE_STRING module_name)
 		return 0;
 	}
 
+	ANSI_STRING cstr = { 0 };
+	UNICODE_STRING name = { 0 };
+	void* addr = nullptr;
 
+	RtlInitAnsiString(&cstr, module_name);
+
+	RtlAnsiStringToUnicodeString(&name, &cstr, TRUE);
+
+	addr = MmGetSystemRoutineAddress(&name);
 
 	for (LIST_ENTRY* list = (LIST_ENTRY*)pldr->InLoadOrderModuleList.Flink; list != &pldr->InLoadOrderModuleList; list = (LIST_ENTRY*)list->Flink)
 	{
 		PLDR_DATA_TABLE_ENTRY pentry = CONTAINING_RECORD(list, LDR_DATA_TABLE_ENTRY, InLoadOrderLinks);
 
 
-		if (RtlCompareUnicodeString(&module_name, &pentry->BaseDllName, FALSE) == 0) {
+		if (RtlCompareUnicodeString(&name, &pentry->BaseDllName, FALSE) == 0) {
 
 			printf("Module Name: %wZ\n", pentry->BaseDllName);
 			printf("Module Base: %p\n", pentry->DllBase);
@@ -97,6 +103,7 @@ uintptr_t process::get_module_base(int pid,UNICODE_STRING module_name)
 
 
 			uintptr_t module_base = (uintptr_t)pentry->DllBase;
+			RtlFreeUnicodeString(&name);
 
 			KeUnstackDetachProcess(&apc);
 			return module_base;
@@ -106,6 +113,7 @@ uintptr_t process::get_module_base(int pid,UNICODE_STRING module_name)
 	}
 
 	KeUnstackDetachProcess(&apc);
+	RtlFreeUnicodeString(&name);
 	printf("Module not found\n");
 
 	return 0;
