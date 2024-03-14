@@ -33,9 +33,10 @@ NTSTATUS com::on_request(PDEVICE_OBJECT device_object, PIRP irp)
 
 		KERNEL_MODULE_REQUEST* request = (KERNEL_MODULE_REQUEST*)irp->AssociatedIrp.SystemBuffer;
 
-		uintptr_t base = process::get_module_base(request->pid, request->module_name);
+		printf("pid %d, module_name %wZ\n", request->pid, request->module_name);
 
-		printf("base %p\n", base);
+		//TODO: fix UNICODE_STRING BSOD
+		uintptr_t base = process::get_module_base(request->pid, "ac_client.exe");
 
 		irp->IoStatus.Status = STATUS_SUCCESS;
 		irp->IoStatus.Information = *(uintptr_t*)&base;
