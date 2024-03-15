@@ -27,8 +27,6 @@ NTSTATUS com::on_request(PDEVICE_OBJECT device_object, PIRP irp)
 
 		for (int i = 0; i < request->process_name.Length; i++) {
 
-			if (sizeof(module_str) == request->process_name.Length)
-				break;
 
 			module_str[i] = request->process_name.Buffer[i];
 			if (module_str[i] == 0) {
@@ -57,8 +55,6 @@ NTSTATUS com::on_request(PDEVICE_OBJECT device_object, PIRP irp)
 		printf("pid %d, module_name %wZ\n", request->pid, request->module_name);
 
 
-
-
 		char module_str[16]{};
 
 		if (request->module_name.Length > sizeof(module_str)) {
@@ -71,8 +67,6 @@ NTSTATUS com::on_request(PDEVICE_OBJECT device_object, PIRP irp)
 
 		for (int i = 0; i < request->module_name.Length; i++) {
 
-			if (sizeof(module_str) == request->module_name.Length)
-				break;
 
 			module_str[i] = request->module_name.Buffer[i];
 			if (module_str[i] == 0) {
