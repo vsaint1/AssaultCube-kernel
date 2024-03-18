@@ -33,6 +33,12 @@ public:
 		DeviceIoControl(handle, PROCESS_ID_REQUEST, &request, sizeof(request), NULL, NULL, &bytes_returned, NULL);
 		process_id = (int)bytes_returned;
 
+		if (process_id == 0) {
+			MessageBox(NULL, L"Failed to get process ID, check if the process is running", L"Error", MB_ICONERROR);
+			exit(0);
+		}
+
+
 		return process_id;
 	}
 
@@ -94,7 +100,7 @@ public:
 		return false;
 	}
 
-	std::optional<uintptr_t> find_pattern(const std::string_view pattern) {
+	std::optional<uint32_t> find_pattern(const std::string_view& pattern,unsigned int byte_offset = 0) {
 
 
 		const auto module_base = this->module_base;
@@ -109,6 +115,7 @@ public:
 			return {};
 
 		const auto pattern_bytes = this->aob(pattern);
+
 		for (auto i{ 0 }; i < module_size - pattern.size(); ++i) {
 			auto found{ true };
 
@@ -120,11 +127,20 @@ public:
 			}
 
 			if (found)
-				return module_base + i;
+				return module_base + i + byte_offset;
 		}
 
 		return {};
 	}
+
+	uint32_t find_pattern_offset(const std::string_view &pattern,unsigned int byte_offset = 0) {
+
+		const auto signature = this->find_pattern(pattern, byte_offset);
+
+		return this->readv<uint32_t>(signature.value()) - this->module_base;
+
+	}
+
 private:
 	std::vector<int32_t> aob(const std::string_view& pattern) {
 		std::vector<int32_t> bytes;
