@@ -1,7 +1,11 @@
 #pragma once
 #include <Windows.h>
 #include <winternl.h>
-
+#include <optional>
+#include <string_view>
+#include <vector>
+#include <charconv>
+#include <memory>
 
 #define PROCESS_ID_REQUEST CTL_CODE(FILE_DEVICE_UNKNOWN, 0x555, METHOD_BUFFERED, FILE_SPECIAL_ACCESS)
 
