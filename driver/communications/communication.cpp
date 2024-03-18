@@ -18,21 +18,14 @@ NTSTATUS com::on_request(PDEVICE_OBJECT device_object, PIRP irp)
 
 		char module_str[16]{};
 
-		if (request->process_name.Length > sizeof(module_str)) {
+
+		crt::string_to_c_str(&request->process_name, module_str);
+
+		if (crt::strcmp(module_str, "") == 0) {
 			irp->IoStatus.Status = STATUS_INVALID_PARAMETER;
 			irp->IoStatus.Information = 0;
 			IoCompleteRequest(irp, IO_NO_INCREMENT);
 			break;
-		}
-
-		for (int i = 0; i < request->process_name.Length; i++) {
-
-
-			module_str[i] = request->process_name.Buffer[i];
-			if (module_str[i] == 0) {
-				module_str[i] = 0;
-				break;
-			}
 		}
 
 		const char* process_name = strcmp(module_str, "") == 0 ? "ac_client.exe" : module_str;
@@ -57,22 +50,13 @@ NTSTATUS com::on_request(PDEVICE_OBJECT device_object, PIRP irp)
 
 		char module_str[16]{};
 
-		if (request->module_name.Length > sizeof(module_str)) {
+		crt::string_to_c_str(&request->module_name, module_str);
+
+		if (crt::strcmp(module_str, "") == 0) {
 			irp->IoStatus.Status = STATUS_INVALID_PARAMETER;
 			irp->IoStatus.Information = 0;
 			IoCompleteRequest(irp, IO_NO_INCREMENT);
 			break;
-		}
-
-
-		for (int i = 0; i < request->module_name.Length; i++) {
-
-
-			module_str[i] = request->module_name.Buffer[i];
-			if (module_str[i] == 0) {
-				module_str[i] = 0;
-				break;
-			}
 		}
 
 		const char* module_name = strcmp(module_str, "") == 0 ? "ac_client.exe" : module_str;
