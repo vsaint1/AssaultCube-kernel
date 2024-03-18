@@ -25,12 +25,12 @@ NTSTATUS memory::read(int pid, void* address,void* target, size_t size)
 	size_t bytes = { 0 };
 
 	NTSTATUS status = STATUS_SUCCESS;
-	PEPROCESS proc = {};
+	PEPROCESS target_process = {};
 
-	if (!NT_SUCCESS(PsLookupProcessByProcessId((HANDLE)pid, &proc)))
+	if (!NT_SUCCESS(PsLookupProcessByProcessId((HANDLE)pid, &target_process)))
 		return STATUS_UNSUCCESSFUL;
 
-	status = MmCopyVirtualMemory(proc, address, proc, target, size, KernelMode, &bytes);
+	status = MmCopyVirtualMemory(target_process, address, PsGetCurrentProcess(), target, size, KernelMode, &bytes);
 
 	return status;
 }
