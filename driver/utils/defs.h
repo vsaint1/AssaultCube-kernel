@@ -1,4 +1,6 @@
 #pragma once
+#pragma warning( disable : 4311 4302 4244)
+
 #include <ntifs.h>
 #include "utils.h"
 #include "crt.h"

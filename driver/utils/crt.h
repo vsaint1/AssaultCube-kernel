@@ -71,4 +71,22 @@ namespace crt
 
 		return str_low;
 	}
+
+	__forceinline const char* string_to_c_str(UNICODE_STRING* source, char* destination) {
+
+		if (source->Length == 0 || source->Buffer == 0)
+			return "";
+
+		for (int i = 0; i < source->Length; i++) {
+
+			destination[i] = source->Buffer[i];
+			if (destination[i] == 0) {
+				destination[i] = 0;
+				break;
+			}
+		}
+
+		return "";
+	};
+
 }
