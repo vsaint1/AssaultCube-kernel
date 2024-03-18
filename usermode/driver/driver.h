@@ -1,5 +1,6 @@
 #pragma once
 #include "defs.h"
+#include <stdio.h>
 
 class Driver {
 	HANDLE handle = 0;
@@ -9,12 +10,14 @@ class Driver {
 public:
 
 	Driver() {
-		handle = CreateFile(L"\\\\.\\acube", GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL);
+		void* tmp_handle = CreateFile(L"\\\\.\\acube", GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, NULL, NULL);
 
-		if (!handle) {
-			MessageBox(NULL, L"Failed to open driver", L"Error", MB_ICONERROR);
+		if ((long long)tmp_handle == 0xFFFFFFFFFFFFFFFF) { // INVALID_HANDLE_VALUE
+			MessageBox(NULL, L"Failed to open driver connection", L"Error", MB_ICONERROR);
 			exit(0);
 		}
+
+		this->handle = tmp_handle;
 	}
 
 	~Driver() {
