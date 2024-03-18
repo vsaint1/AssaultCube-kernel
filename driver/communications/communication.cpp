@@ -72,8 +72,23 @@ NTSTATUS com::on_request(PDEVICE_OBJECT device_object, PIRP irp)
 		IoCompleteRequest(irp, IO_NO_INCREMENT);
 		break;
 	}
+	case READ_REQUEST: {
+		printf("READ_REQUEST\n");
 
+		KERNEL_READ_REQUEST* request = (KERNEL_READ_REQUEST*)irp->AssociatedIrp.SystemBuffer;
+
+		printf("pid %d, address %p, size %d\n", request->src_pid, request->src_address, request->size);
+
+		auto status = memory::read(request->src_pid,request->src_address,request->p_buffer ,request->size);
+
+
+		irp->IoStatus.Status = status;
+		irp->IoStatus.Information = sizeof(PKERNEL_READ_REQUEST);
+		IoCompleteRequest(irp, IO_NO_INCREMENT);
+		break;
+	}
 	default:
+
 		irp->IoStatus.Status = STATUS_INVALID_DEVICE_REQUEST;
 		irp->IoStatus.Information = 0;
 		IoCompleteRequest(irp, IO_NO_INCREMENT);
